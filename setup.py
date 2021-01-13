@@ -145,7 +145,11 @@ def dirty_version():
 
     # if we get to this point, we are not at a particular tag.  we'll modify
     # the __version__ from catsoop/__init__.py to include a .devN suffix.
-    CS_VERSION = "%s.dev%s+%s" % (CS_VERSION, N, _vcs_shortname[vcs],)
+    CS_VERSION = "%s.dev%s+%s" % (
+        CS_VERSION,
+        N,
+        _vcs_shortname[vcs],
+    )
     with open(os.path.join(os.path.dirname(__file__), "catsoop", "dev.hash"), "w") as f:
         f.write("{}|{}|{}".format(vcs, sha, _date))
     with open(VERSION_FNAME, "r") as f:
