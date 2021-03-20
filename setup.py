@@ -61,6 +61,15 @@ def dev_number_git():
     except:
         return
     try:
+        dirty = len(
+            subprocess.check_output(["git", "status", "--porcelain"])
+            .decode("ascii")
+            .strip()
+            .splitlines()
+        )
+    except:
+        return
+    try:
         N = int(
             subprocess.check_output(["git", "rev-list", "--all", "--count"]).decode(
                 "ascii"
@@ -76,7 +85,7 @@ def dev_number_git():
     except:
         _date = ""
         print("failed to get git commit date", file=sys.stderr)
-    return ("Git", sha, N, _date)
+    return ("Git", sha, N, _date, dirty)
 
 
 def _version_sort(x):
@@ -117,7 +126,16 @@ def dev_number_hg():
     except Exception:
         _date = ""
         print("failed to get hg commit date", file=sys.stderr)
-    return ("Mercurial", sha, N, _date)
+    try:
+        dirty = len(
+            subprocess.check_output(["hg", "status"])
+            .decode("ascii")
+            .strip()
+            .splitlines()
+        )
+    except:
+        return
+    return ("Mercurial", sha, N, _date, dirty)
 
 
 _vcs_shortname = {
@@ -141,14 +159,16 @@ def dirty_version():
     dev_num = dev_number()
     if not dev_num:
         return
-    vcs, sha, N, _date = dev_num
+    vcs, sha, N, _date, dirty = dev_num
 
     # if we get to this point, we are not at a particular tag.  we'll modify
     # the __version__ from catsoop/__init__.py to include a .devN suffix.
-    CS_VERSION = "%s.dev%s+%s" % (
+    CS_VERSION = "%s.dev%s+%s.%s%s" % (
         CS_VERSION,
         N,
         _vcs_shortname[vcs],
+        sha[:8],
+        (".local%s" % dirty) if dirty else "",
     )
     with open(os.path.join(os.path.dirname(__file__), "catsoop", "dev.hash"), "w") as f:
         f.write("{}|{}|{}".format(vcs, sha, _date))
