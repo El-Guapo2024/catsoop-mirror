@@ -1,7 +1,9 @@
-install:
-	pip3 install .
+install: uninstall
+	rm dist/*.whl
+	python3 setup.py bdist_wheel
+	pip3 install --force-reinstall dist/*.whl
 
-develop:
+develop: uninstall
 	pip3 install -e .
 
 uninstall:
