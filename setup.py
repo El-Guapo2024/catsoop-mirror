@@ -71,7 +71,7 @@ def dev_number_git():
         return
     try:
         N = int(
-            subprocess.check_output(["git", "rev-list", "--all", "--count"]).decode(
+            subprocess.check_output(["git", "rev-list", "--count", "HEAD"]).decode(
                 "ascii"
             )
         )
@@ -135,6 +135,10 @@ def dev_number_hg():
         )
     except:
         return
+    try:
+        N = len(subprocess.check_output(["hg", "log", "-b", "default", "--template", "."]).strip())
+    except:
+        pass
     return ("Mercurial", sha, N, _date, dirty)
 
 
