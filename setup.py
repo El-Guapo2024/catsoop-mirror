@@ -136,7 +136,11 @@ def dev_number_hg():
     except:
         return
     try:
-        N = len(subprocess.check_output(["hg", "log", "-b", "default", "--template", "."]).strip())
+        N = len(
+            subprocess.check_output(
+                ["hg", "log", "-b", "default", "--template", "."]
+            ).strip()
+        )
     except:
         pass
     return ("Mercurial", sha, N, _date, dirty)
