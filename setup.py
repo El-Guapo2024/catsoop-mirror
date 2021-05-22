@@ -212,7 +212,6 @@ def main():
                 "catsoop.test",
                 "catsoop.thirdparty",
                 "catsoop.scripts",
-                "catsoop.cslog",
             ],
             scripts=[],
             url="https://catsoop.mit.edu",
