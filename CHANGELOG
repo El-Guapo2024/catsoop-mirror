@@ -39,6 +39,8 @@ DEPRECATED:
 
 REMOVED:
 
+  * tutor.init_random now uses randomly-generated random seeds again
+
 FIXED:
 
   * Fixed an issue with autolocking and auto answer viewing
@@ -60,6 +62,10 @@ FIXED:
     in a completely fresh codemirror.js for each one (overriding the old modes)
 
   * Replaced deprecated get_event_loop function in reporter.py script
+
+REMOVED:
+
+  * Removed the ability to use other machines as remote checkers
 
 SECURITY:
 
