@@ -224,7 +224,7 @@ def main():
                 "console_scripts": ["catsoop = catsoop.__main__:command_line_interface"]
             },
             install_requires=requirements,
-            extras_require={"postgres": ["psycopg2"], "test": ["pytest"]},
+            extras_require={"server": ["uwsgi"], "test": ["pytest"]},
             package_dir={"catsoop": "catsoop"},
             package_data={"catsoop": ["scripts/*"]},
             classifiers=[
