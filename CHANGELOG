@@ -11,9 +11,20 @@ ADDED:
 
   * The "pythoncode" question type now listens to the "csq_show_check" flag
 
+  * Added the "download" and "filename" options to the "raw_response" handler
+    to allow making the responses downloadable (thanks to Shen Shen)
+
+  * <python> tags can now be exited using sys.exit(), with non-zero 'return
+    codes' causing the output to be ignored (or with a string value, using that
+    instead of the Python block's output.
+
+  * Additional information is now stored in the question_info logs.
+
 CHANGED:
 
   * Suppressed some warnings coming from BeautifulSoup.
+
+  * Changed default session duration to ten days instead of two
 
 DEPRECATED:
 
@@ -39,6 +50,16 @@ FIXED:
   * Fixed a potential bug in the "pythoncode" question type when decoding
     submitted files containing a BOM
 
+  * An empty string is no longer considered to be a well-formed response to a
+    "pythonic" question
+
+  * Fixed a potential bug with the length calculation in the "raw_response"
+    header when "response" was given as a string containing unicode characters
+    (thanks to Shen Shen)
+
+  * Fixed an issue with custom "csq_check_function" used with "checkbox"
+    renderer in "multiplechoice" questions.
+
 SECURITY:
 
 ACCESSIBILITY:
@@ -47,6 +68,10 @@ ACCESSIBILITY:
     to properly associate labels with inputs
 
 DOCUMENTATION:
+
+VENDORED SOFTWARE:
+
+  * Upgraded KaTeX to v0.16.4
 
 
 ####################
