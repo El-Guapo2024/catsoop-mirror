@@ -16,15 +16,30 @@ ADDED:
 
   * <python> tags can now be exited using sys.exit(), with non-zero 'return
     codes' causing the output to be ignored (or with a string value, using that
-    instead of the Python block's output.
+    instead of the Python block's output
 
-  * Additional information is now stored in the question_info logs.
+  * Additional information is now stored in the question_info logs
+
+  * Added the ability for users to specify that they prefer light text on a
+    dark background
+
+  * Updates to the question info cache can now be avoided by setting
+    cs_update_questions_cache = False
 
 CHANGED:
 
   * Suppressed some warnings coming from BeautifulSoup.
 
-  * Changed default session duration to ten days instead of two
+  * Changed default session duration to fourteen days instead of two
+
+  * Changed location of lock files to (hopefully) prevent the size of the locks
+    directory from growing out of control
+
+  * Javascript files are now located at /js/ instead of /scripts/
+
+  * <chapter>, <section>, <subsection>, and <subsubsection> tags have
+    been replaced with <catsoop-chapter>, <catsoop-section>, etc; and a
+    conversion script has been provided
 
 DEPRECATED:
 
@@ -60,6 +75,18 @@ FIXED:
   * Fixed an issue with custom "csq_check_function" used with "checkbox"
     renderer in "multiplechoice" questions.
 
+  * Fixed a display issue causing a "hamburger" to appear on narrow screens
+    even with no menu items present
+
+  * Replaced the <showhide> implementation so as to avoid broken rendering of
+    <details> tags in Chromium/Chrome
+
+  * Code blocks within responses to question submissions are now properly
+    highlighted
+
+  * Fixed a regression that caused the 'timeout' option in pythoncode test
+    cases to be ignored
+
 SECURITY:
 
 ACCESSIBILITY:
@@ -67,11 +94,34 @@ ACCESSIBILITY:
   * Changed "radio" and "checkbox" multiplechoice variants to use fieldsets and
     to properly associate labels with inputs
 
+  * Improved screen-reader-friendliness of solution displays for the "checkbox"
+    multiplechoice renderer
+
+  * Improved code displays (with and without line numbers) to make them more
+    usable with a screen reader
+
+  * Automatically set ARIA labels for built-in question types based on
+    csq_prompt (and added the ability to specify a csq_preamble that is not
+    included as part of the ARIA label).
+
+  * Switched from KaTeX to MathJax for math rendering, for better screen reader
+    support
+
+  * Improved keyboard-oriented navigation and screen-reader support for the
+    navigation breadcrumbs and the top menu
+
+  * Improved accessibility of modal dialogs from the cs_modal javascript
+    function
+
 DOCUMENTATION:
 
 VENDORED SOFTWARE:
 
-  * Upgraded KaTeX to v0.16.4
+  * Removed KaTeX from the distribution
+
+  * Included MathJax (v3.2.2) in the distribution
+
+  * Upgraded CodeMirror to version 6
 
 
 ####################
