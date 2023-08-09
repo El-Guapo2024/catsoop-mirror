@@ -24,7 +24,7 @@ import subprocess
 
 from setuptools import setup
 
-from catsoop import __codename__ as CODENAME
+from catsoop import __version__ as CS_VERSION, __codename__ as CODENAME
 
 logo = (
     "\\            "
@@ -174,9 +174,6 @@ _vcs_shortname = {
 
 def dev_number():
     return dev_number_hg() or dev_number_git()
-
-
-CS_VERSION = "v0.0.0"
 
 
 def dirty_version():
