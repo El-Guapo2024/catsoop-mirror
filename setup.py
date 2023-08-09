@@ -188,18 +188,23 @@ def dirty_version():
     if dev_num:
         CS_VERSION = dev_num["version"]
         if dev_num["distance"] != 0:
-            CS_VERSION = f"%s+%s%s.%s%s" % (
+            CS_VERSION = f"%s+%s.%s.%s.l%s" % (
                 CS_VERSION,
                 dev_num["shortvcs"],
                 dev_num["distance"],
                 dev_num["hash"][:8],
-                (".local%s" % dev_num["changes"]) if dev_num["changes"] else "",
+                dev_num["changes"],
             )
             with open(
                 os.path.join(os.path.dirname(__file__), "catsoop", "dev.hash"), "w"
             ) as f:
                 f.write(
-                    "{}|{}|{}".format(dev_num["vcs"], dev_num["hash"], dev_num["date"])
+                    "{}|{}|{}|{}".format(
+                        dev_num["vcs"],
+                        dev_num["hash"],
+                        dev_num["date"],
+                        dev_num["changes"],
+                    )
                 )
     with open(VERSION_FNAME, "r") as f:
         ORIGINAL_VERSION = f.read()
