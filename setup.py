@@ -24,7 +24,7 @@ import subprocess
 
 from setuptools import setup
 
-from catsoop import __version__ as CS_VERSION, __codename__ as CODENAME
+from catsoop import __codename__ as CODENAME
 
 logo = (
     "\\            "
@@ -88,19 +88,19 @@ def dev_number_git():
     return ("Git", sha, N, _date, dirty)
 
 
-def _version_sort(x):
-    return (
-        tuple(map(int, x[1:].split(".")))
-        if x.startswith("v") and (not x > "v%s" % CS_VERSION)
-        else (float("-inf"),)
-    )
-
-
 def dev_number_hg():
+    # get the current branch
     try:
-        tags = subprocess.check_output(["hg", "tags"]).decode("ascii")
-        tags = dict(i.strip().split() for i in tags.splitlines())
-        tags = {k: v.split(":") for k, v in tags.items()}
+        branch = subprocess.check_output(["hg", "branch"]).decode("ascii").strip()
+        print(f"hg branch: {branch!r}")
+    except:
+        print("failed to find hg branch", file=sys.stderr)
+        return
+    try:
+        tags = subprocess.check_output(
+            ["hg", "tags", "--template", "{tags}:{node}\n"]
+        ).decode("ascii")
+        tags = dict(i.strip().split(":") for i in tags.splitlines())
     except Exception:
         print("failed to find hg tags", file=sys.stderr)
         return
@@ -114,10 +114,29 @@ def dev_number_hg():
         )
     except:
         sha = tags["tip"][1]
-    N = int(tags["tip"][0])
-    if N - int(tags[max(tags, key=_version_sort)][0]) <= 2:
-        # close enough to a tag to consider ourselves part of that tag
-        return
+    _cmd = ["hg", "log", "-b", branch, "--template", "{node}\n"]
+    ordered_hashes = {
+        hash_: ix
+        for ix, hash_ in enumerate(
+            reversed(subprocess.check_output(_cmd).decode("ascii").splitlines())
+        )
+    }
+    current_rev = ordered_hashes[sha]
+    most_recent_version = "v0.0.0"
+    N = 99999999
+    for t, h in tags.items():
+        if t != "tip" and h in ordered_hashes:
+            distance = current_rev - ordered_hashes[h]
+            if 0 <= distance < N:
+                N = distance
+                most_recent_version = t
+        if N == 0:
+            break
+    tag_revs = {
+        t: ordered_hashes[h]
+        for t, h in tags.items()
+        if t != "tip" and h in ordered_hashes
+    }
     try:
         _cmd = ["hg", "log", "-r", "tip"]
         _info = subprocess.check_output(_cmd).decode("ascii")
@@ -135,15 +154,16 @@ def dev_number_hg():
         )
     except:
         return
-    try:
-        N = len(
-            subprocess.check_output(
-                ["hg", "log", "-b", "default", "--template", "."]
-            ).strip()
-        )
-    except:
-        pass
-    return ("Mercurial", sha, N, _date, dirty)
+    return {
+        "vcs": "Mercurial",
+        "shortvcs": "hg",
+        "branch": None if branch == "default" else branch,
+        "version": most_recent_version,
+        "hash": sha,
+        "distance": N,
+        "date": _date,
+        "changes": dirty,
+    }
 
 
 _vcs_shortname = {
@@ -156,6 +176,9 @@ def dev_number():
     return dev_number_hg() or dev_number_git()
 
 
+CS_VERSION = "v0.0.0"
+
+
 def dirty_version():
     """
     If install/sdist is run from a git directory, add a devN suffix to reported
@@ -165,21 +188,21 @@ def dirty_version():
     global CS_VERSION, ORIGINAL_VERSION
 
     dev_num = dev_number()
-    if not dev_num:
-        return
-    vcs, sha, N, _date, dirty = dev_num
-
-    # if we get to this point, we are not at a particular tag.  we'll modify
-    # the __version__ from catsoop/__init__.py to include a .devN suffix.
-    CS_VERSION = "%s.dev%s+%s.%s%s" % (
-        CS_VERSION,
-        N,
-        _vcs_shortname[vcs],
-        sha[:8],
-        (".local%s" % dirty) if dirty else "",
-    )
-    with open(os.path.join(os.path.dirname(__file__), "catsoop", "dev.hash"), "w") as f:
-        f.write("{}|{}|{}".format(vcs, sha, _date))
+    if dev_num:
+        CS_VERSION = dev_num["version"]
+        if dev_num["distance"] != 0:
+            CS_VERSION = f"%s+%s%s%s" % (
+                CS_VERSION,
+                dev_num["shortvcs"],
+                dev_num["distance"],
+                (".local%s" % dev_num["changes"]) if dev_num["changes"] else "",
+            )
+            with open(
+                os.path.join(os.path.dirname(__file__), "catsoop", "dev.hash"), "w"
+            ) as f:
+                f.write(
+                    "{}|{}|{}".format(dev_num["vcs"], dev_num["hash"], dev_num["date"])
+                )
     with open(VERSION_FNAME, "r") as f:
         ORIGINAL_VERSION = f.read()
     with open(VERSION_FNAME, "w") as f:
