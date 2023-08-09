@@ -206,7 +206,7 @@ def dirty_version():
     with open(VERSION_FNAME, "r") as f:
         ORIGINAL_VERSION = f.read()
     with open(VERSION_FNAME, "w") as f:
-        f.write("__version__ = %r\n" % CS_VERSION)
+        f.write("__version__ = %r\n" % CS_VERSION.lstrip("v"))
         f.write("__codename__= %r\n" % CODENAME)
 
 
@@ -227,7 +227,7 @@ def main():
         dirty_version()
         setup(
             name="catsoop",
-            version=CS_VERSION,
+            version=CS_VERSION.lstrip("v"),
             author="CAT-SOOP Contributors",
             author_email="catsoop-dev@mit.edu",
             packages=[
