@@ -188,12 +188,12 @@ def dirty_version():
     if dev_num:
         CS_VERSION = dev_num["version"]
         if dev_num["distance"] != 0:
-            CS_VERSION = f"%s+%s.%s.%s.l%s" % (
+            CS_VERSION = f"%s+%s.%s.%s%s" % (
                 CS_VERSION,
                 dev_num["shortvcs"],
                 dev_num["distance"],
                 dev_num["hash"][:8],
-                dev_num["changes"],
+                (".l%s" % dev_num["changes"]) if dev_num["changes"] else "",
             )
             with open(
                 os.path.join(os.path.dirname(__file__), "catsoop", "dev.hash"), "w"
