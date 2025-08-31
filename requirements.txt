@@ -1,5 +1,6 @@
 bs4
 cheroot
+jaraco.functools
 filelock
 python-jose
 mistletoe
