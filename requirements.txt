@@ -16,3 +16,4 @@ ldap3
 black
 pytest
 setuptools
+matplotlib
